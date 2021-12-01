@@ -42,13 +42,13 @@ public class Day1Test {
 
     @Test
     public void task1_real() {
-        final var input = readResource("day1_input.txt");
+        final var input = readResource("/day1_input.txt");
         assertThat(Day1.task1(input)).isEqualTo("1559");
     }
 
     @Test
     public void task2_real() {
-        final var input = readResource("day1_input.txt");
+        final var input = readResource("/day1_input.txt");
         assertThat(Day1.task2(input)).isEqualTo("1600");
     }
 
