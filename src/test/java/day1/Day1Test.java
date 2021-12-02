@@ -1,11 +1,8 @@
 package day1;
 
-import com.google.common.base.Charsets;
+import common.ResourceReader;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Day1Test {
@@ -42,30 +39,14 @@ public class Day1Test {
 
     @Test
     public void task1_real() {
-        final var input = readResource("/day1_input.txt");
+        final var input = ResourceReader.readResource("/day1_input.txt");
         assertThat(Day1.task1(input)).isEqualTo("1559");
     }
 
     @Test
     public void task2_real() {
-        final var input = readResource("/day1_input.txt");
+        final var input = ResourceReader.readResource("/day1_input.txt");
         assertThat(Day1.task2(input)).isEqualTo("1600");
-    }
-
-    public static String readResource(final String resourceName) {
-        checkNotNull(resourceName, "resourceName required");
-
-        try (var inputStream = Day1Test.class.getResourceAsStream(resourceName)) {
-
-            if (inputStream == null) {
-                throw new IllegalStateException("Resource not found " + inputStream);
-            }
-
-            final var resourceContentBytes = inputStream.readAllBytes();
-            return new String(resourceContentBytes, Charsets.UTF_8);
-        } catch (final IOException ex) {
-            throw new RuntimeException("Failed to read resource " + resourceName, ex);
-        }
     }
 
 }
