@@ -1,6 +1,7 @@
 package day2;
 
 import com.google.common.collect.ImmutableMap;
+import day02.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,36 +11,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 public class Day2 {
-
-    public static class State {
-        private final int x;
-        private final int y;
-        private final int aim;
-
-        public State(int x, int y) {
-            this.x = x;
-            this.y = y;
-            this.aim = 0;
-        }
-
-        public State(int x, int y, int aim) {
-            this.x = x;
-            this.y = y;
-            this.aim = aim;
-        }
-
-        public final int getX() {
-            return x;
-        }
-
-        public final int getY() {
-            return y;
-        }
-
-        public final int getAim() {
-            return aim;
-        }
-    }
 
     public enum Direction {
         forward,
@@ -92,26 +63,26 @@ public class Day2 {
             state = processor.apply(state, command.getArg());
         }
 
-        final var result = state.getX() * state.getY();
+        final var result = state.getHorizontalPos() * state.getVerticalPos();
 
         return String.valueOf(result);
     }
 
     public static String task1(final String input) {
         return taskImpl(input, ImmutableMap.of(
-                Direction.forward, (state, arg) -> new State(state.getX() + arg, state.getY()),
-                Direction.up, (state, arg) -> new State(state.getX(), state.getY() - arg),
-                Direction.down, (state, arg) -> new State(state.getX(), state.getY() + arg)
+                Direction.forward, (state, arg) -> new State(state.getHorizontalPos() + arg, state.getVerticalPos(), 0),
+                Direction.up, (state, arg) -> new State(state.getHorizontalPos(), state.getVerticalPos() - arg, 0),
+                Direction.down, (state, arg) -> new State(state.getHorizontalPos(), state.getVerticalPos() + arg, 0)
         ));
     }
 
     public static String task2(final String input) {
         return taskImpl(input, ImmutableMap.of(
-                Direction.down, (state, arg) -> new State(state.getX(), state.getY(), state.getAim() + arg),
-                Direction.up, (state, arg) -> new State(state.getX(), state.getY(), state.getAim() - arg),
+                Direction.down, (state, arg) -> new State(state.getHorizontalPos(), state.getVerticalPos(), state.getAim() + arg),
+                Direction.up, (state, arg) -> new State(state.getHorizontalPos(), state.getVerticalPos(), state.getAim() - arg),
                 Direction.forward, (state, arg) -> new State(
-                        state.getX() + arg,
-                        state.getY() + state.getAim() * arg,
+                        state.getHorizontalPos() + arg,
+                        state.getVerticalPos() + state.getAim() * arg,
                         state.getAim())
         ));
     }
