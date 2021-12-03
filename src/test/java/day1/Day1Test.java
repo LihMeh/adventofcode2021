@@ -1,6 +1,6 @@
 package day1;
 
-import common.ResourceReader;
+import common.ResourceReaderKt;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,13 +39,13 @@ public class Day1Test {
 
     @Test
     public void task1_real() {
-        final var input = ResourceReader.readResource("/day1_input.txt");
+        final var input = ResourceReaderKt.readResource("/day01_input.txt");
         assertThat(Day1.task1(input)).isEqualTo("1559");
     }
 
     @Test
     public void task2_real() {
-        final var input = ResourceReader.readResource("/day1_input.txt");
+        final var input = ResourceReaderKt.readResource("/day01_input.txt");
         assertThat(Day1.task2(input)).isEqualTo("1600");
     }
 
