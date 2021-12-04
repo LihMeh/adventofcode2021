@@ -24,17 +24,6 @@ public class Day3 {
         return List.copyOf(result);
     }
 
-    public static String task1(final String input) {
-        final var diagnosticReport = parseInput(input);
-        final var gammaRateBin = calculateGammaRate(diagnosticReport);
-        final var gammaRate = toDecimal(gammaRateBin);
-        final var epsilonBin = negate(gammaRateBin);
-        final var epsilon = toDecimal(epsilonBin);
-
-        final var result = gammaRate * epsilon;
-        return "" + result;
-    }
-
     public static int[] calculateGammaRate(final List<int[]> diagnosticReport) {
         final var sum = summarize(diagnosticReport);
         final var gammaRateBin = new int[sum.length];
@@ -80,7 +69,7 @@ public class Day3 {
         return result;
     }
 
-    public static String task2(final String input) {
+    public static int task2(final String input) {
         final var diagnostingReport = parseInput(input);
 
         final var oxyGenRating = extractMetric(diagnostingReport, (currentValue, positiveCount, negativeCount) -> {
@@ -103,8 +92,7 @@ public class Day3 {
             }
         });
 
-        final var result = toDecimal(oxyGenRating) * toDecimal(co2ScubRating);
-        return "" + result;
+        return toDecimal(oxyGenRating) * toDecimal(co2ScubRating);
     }
 
     public interface Checker {
