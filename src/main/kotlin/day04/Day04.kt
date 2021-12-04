@@ -72,15 +72,15 @@ fun parseCard(input: String): Card {
 fun task1(input: String): Int {
     val gameData = parseInput(input)
 
-    val cardsMutable = gameData.cards.toList()
+    val cards = gameData.cards.toList()
     val numbersQueue = ArrayDeque(gameData.numbers)
     var lastNumber: Int
     do {
         lastNumber = numbersQueue.removeFirst()
-        cardsMutable.forEach { it.markNumber(lastNumber) }
-    } while (cardsMutable.none { it.isVictory() })
+        cards.forEach { it.markNumber(lastNumber) }
+    } while (cards.none { it.isVictory() })
 
-    val winningCard = cardsMutable.first { it.isVictory() }
+    val winningCard = cards.first { it.isVictory() }
     return winningCard.getItemSum() * lastNumber
 }
 
@@ -101,26 +101,25 @@ fun calculateScore(card: Card, numbers: List<Int>): Int {
 fun task2(input: String): Int {
     val gameData = parseInput(input)
 
-    val activeCards = ArrayList(gameData.cards)
-    var lastWinCard: Card? = null
-    var lastWinStepIdx = -1
-    var currentStepIdx = 0
-    while (currentStepIdx < gameData.numbers.size && activeCards.isNotEmpty()) {
-        val numbersByCurrentStepSet = gameData.numbers.slice(0..currentStepIdx).toSet()
+    val activeCards = gameData.cards.toMutableList()
+    val numberQueue = ArrayDeque(gameData.numbers)
 
+    var lastWinCard: Card? = null
+    var lastWinNumber = -1
+    while (numberQueue.isNotEmpty() && activeCards.isNotEmpty()) {
+        val newNumber = numberQueue.removeFirst()
+        activeCards.forEach { it.markNumber(newNumber) }
         val winningCards = activeCards
-            .filter { isWinningCard(it, numbersByCurrentStepSet) }
+            .filter { it.isVictory() }
             .toList()
         if (winningCards.isNotEmpty()) {
-            lastWinStepIdx = currentStepIdx
+            lastWinNumber = newNumber
             lastWinCard = winningCards.last()
             activeCards.removeAll(winningCards)
         }
-
-        currentStepIdx++
     }
     check(lastWinCard != null)
-    check(lastWinStepIdx >= 0)
+    check(lastWinNumber >= 0)
 
-    return calculateScore(lastWinCard, gameData.numbers.slice(0..lastWinStepIdx))
+    return lastWinCard.getItemSum() * lastWinNumber
 }
