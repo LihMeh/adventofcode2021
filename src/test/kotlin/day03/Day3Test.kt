@@ -1,7 +1,8 @@
-package day3
+package day03
 
 
 import common.readResource
+import day3.Day3
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
