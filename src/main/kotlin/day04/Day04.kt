@@ -2,21 +2,44 @@ package day04
 
 class Input(val numbers: List<Int>, val cards: List<Card>)
 
-class Card(val rows: List<List<Int>>) {
-    val columns: List<List<Int>>
+class Card(proposedRows: List<List<Int>>) {
+    val rows: List<MutableSet<Int>>
+    val columns: List<MutableSet<Int>>
 
     init {
-        check(rows.isNotEmpty())
-        val firstRowSize = rows.get(0).size
-        check(rows.none { it.size != firstRowSize })
+        check(proposedRows.isNotEmpty())
+        val firstRowSize = proposedRows[0].size
+        check(proposedRows.none { it.size != firstRowSize })
+        rows = proposedRows
+            .map { row -> row.toMutableSet() }
+            .toList()
+        columns = (0 until firstRowSize)
+            .map { columnIdx ->
+                proposedRows
+                    .map { row -> row[columnIdx] }
+                    .toMutableSet()
+            }
+            .toList()
+    }
 
-        columns = ArrayList(firstRowSize)
-        for (idx in 0 until firstRowSize) {
-            columns.add(rows
-                .map { it[idx] }
-                .toList())
+    fun markNumber(number: Int) {
+        for (row in rows) {
+            row.remove(number)
+        }
+        for (column in columns) {
+            column.remove(number)
         }
     }
+
+    fun isVictory(): Boolean {
+        return rows.union(columns)
+            .any { it.isEmpty() }
+    }
+
+    fun getItemSum(): Int {
+        return rows.flatten().sum()
+    }
+
 }
 
 fun parseInput(input: String): Input {
@@ -48,21 +71,17 @@ fun parseCard(input: String): Card {
 
 fun task1(input: String): Int {
     val gameData = parseInput(input)
-    return gameData.numbers.indices
-        .mapNotNull { stepIdx ->
-            val numbersTillCurrentStep = gameData.numbers.slice(0..stepIdx)
-            val numbersTillCurrentStepSet = numbersTillCurrentStep.toSet()
 
-            val winningCard = gameData.cards
-                .firstOrNull { card -> isWinningCard(card, numbersTillCurrentStepSet) }
+    val cardsMutable = gameData.cards.toList()
+    val numbersQueue = ArrayDeque(gameData.numbers)
+    var lastNumber: Int
+    do {
+        lastNumber = numbersQueue.removeFirst()
+        cardsMutable.forEach { it.markNumber(lastNumber) }
+    } while (cardsMutable.none { it.isVictory() })
 
-            if (winningCard != null) {
-                calculateScore(winningCard, numbersTillCurrentStep)
-            } else {
-                null
-            }
-        }
-        .first()
+    val winningCard = cardsMutable.first { it.isVictory() }
+    return winningCard.getItemSum() * lastNumber
 }
 
 fun isWinningCard(card: Card, numberSet: Set<Int>): Boolean {
