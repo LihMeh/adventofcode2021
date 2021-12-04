@@ -7,9 +7,10 @@ class Card(proposedRows: List<List<Int>>) {
     val columns: List<MutableSet<Int>>
 
     init {
-        check(proposedRows.isNotEmpty())
+        check(proposedRows.isNotEmpty()) { "proposedRows is empty" }
         val firstRowSize = proposedRows[0].size
-        check(proposedRows.none { it.size != firstRowSize })
+        check(proposedRows.none { it.size != firstRowSize }) { "Not all proposedRows have size $firstRowSize" }
+
         rows = proposedRows
             .map { row -> row.toMutableSet() }
             .toList()
@@ -84,20 +85,6 @@ fun task1(input: String): Int {
     return winningCard.getItemSum() * lastNumber
 }
 
-fun isWinningCard(card: Card, numberSet: Set<Int>): Boolean {
-    return card.rows.union(card.columns)
-        .any { rowOrColumn -> numberSet.containsAll(rowOrColumn) }
-}
-
-fun calculateScore(card: Card, numbers: List<Int>): Int {
-    val numberSet = HashSet(numbers)
-    val unmarkedNumberSum = card.rows
-        .flatten()
-        .filter { !numberSet.contains(it) }
-        .sum()
-    return unmarkedNumberSum * numbers.last()
-}
-
 fun task2(input: String): Int {
     val gameData = parseInput(input)
 
@@ -118,8 +105,7 @@ fun task2(input: String): Int {
             activeCards.removeAll(winningCards)
         }
     }
-    check(lastWinCard != null)
-    check(lastWinNumber >= 0)
+    check(lastWinCard != null && lastWinNumber >= 0) { "no winning card found" }
 
     return lastWinCard.getItemSum() * lastWinNumber
 }
