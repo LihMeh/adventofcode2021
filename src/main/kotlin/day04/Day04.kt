@@ -3,8 +3,8 @@ package day04
 class Input(val numbers: List<Int>, val cards: List<Card>)
 
 class Card(proposedRows: List<List<Int>>) {
-    val rows: List<MutableSet<Int>>
-    val columns: List<MutableSet<Int>>
+    private val rows: List<MutableSet<Int>>
+    private val columns: List<MutableSet<Int>>
 
     init {
         check(proposedRows.isNotEmpty()) { "proposedRows is empty" }
