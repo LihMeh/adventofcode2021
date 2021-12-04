@@ -7,17 +7,17 @@ fun parseIntList(input: String): List<Int> {
         .toList()
 }
 
-fun task01(input: String): String {
+fun task1(input: String): Int {
     val depthReport = parseIntList(input)
 
     val increaseCount = depthReport
         .windowed(2)
         .count { pair -> pair[1] > pair[0] }
 
-    return "$increaseCount"
+    return increaseCount
 }
 
-fun task02(input: String): String {
+fun task2(input: String): Int {
     val depthReport = parseIntList(input)
 
     val slidingWindows = depthReport
@@ -27,5 +27,5 @@ fun task02(input: String): String {
         .windowed(2)
         .count { pair -> pair[1] > pair[0] }
 
-    return "$increaseCount"
+    return increaseCount
 }
