@@ -2,7 +2,6 @@ package day03
 
 
 import common.readResource
-import day3.Day3
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -41,7 +40,7 @@ class Day03Test {
     fun task2_example() {
         assertEquals(
             230,
-            Day3.task2(
+            task2(
                 "00100\n" +
                         "11110\n" +
                         "10110\n" +
@@ -62,7 +61,7 @@ class Day03Test {
     fun task2_real() {
         assertEquals(
             4273224,
-            Day3.task2(readResource("/day03_input.txt"))
+            task2(readResource("/day03_input.txt"))
         )
     }
 }

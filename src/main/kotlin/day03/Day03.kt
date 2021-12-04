@@ -9,7 +9,22 @@ fun task1(input: String): Int {
 }
 
 fun task2(input: String): Int {
-    return -1
+    val diagnosticReport = parseInput(input)
+    val oxyGenRating = calculateMetric(diagnosticReport) { currentValue, positiveCount, negativeCout ->
+        if (positiveCount >= negativeCout) {
+            currentValue == 1
+        } else {
+            currentValue == 0
+        }
+    }
+    val co2ScubRating = calculateMetric(diagnosticReport) { currentValue, positiveCount, negativeCout ->
+        if (positiveCount >= negativeCout) {
+            currentValue == 0
+        } else {
+            currentValue == 1
+        }
+    }
+    return toDecimal(oxyGenRating) * toDecimal(co2ScubRating)
 }
 
 fun parseInput(input: String): List<List<Int>> {
@@ -48,4 +63,29 @@ fun toDecimal(input: List<Int>): Int {
         currentPosValue *= 2
     }
     return result
+}
+
+fun calculateMetric(diagnosticalReport: List<List<Int>>, strategy: MetricStrategy): List<Int> {
+    check(diagnosticalReport.isNotEmpty())
+
+    val currentState = diagnosticalReport.toMutableList()
+    var currentIdx = 0
+    while (currentState.size > 1) {
+        val bitCount = currentState.first().size
+        check(currentIdx < bitCount)
+
+        val positiveBits = currentState
+            .map { row -> row[currentIdx] }
+            .sum()
+        val negativeBits = currentState.size - positiveBits
+        currentState.removeAll { row -> !strategy.isShouldPreserveRow(row[currentIdx], positiveBits, negativeBits) }
+
+        currentIdx++
+    }
+    check(currentState.size == 1)
+    return currentState.first()
+}
+
+fun interface MetricStrategy {
+    fun isShouldPreserveRow(currentValue: Int, positiveCount: Int, negativeCount: Int): Boolean
 }
