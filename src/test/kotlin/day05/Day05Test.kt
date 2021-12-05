@@ -38,27 +38,11 @@ class Day05Test {
         )
     }
 
-    /*
     @Test
     fun intersect() {
-        assertNull(
-            lineIntersectionPoints(
-                Line(Point2D(2, 2), Point2D(2, 1)),
-                Line(Point2D(0, 9), Point2D(5, 9))
-            )
-        )
-
-        assertEquals(
-            Line(Point2D(7, 4), Point2D(7, 4)),
-            lineIntersectionPoints(
-                Line(Point2D(7, 0), Point2D(7, 4)),
-                Line(Point2D(3, 4), Point2D(9, 4))
-            )
-        )
-
         assertEquals(
             Line(Point2D(5, 1), Point2D(10, 1)),
-            lineIntersectionPoints(
+            intersectLines(
                 Line(Point2D(1, 1), Point2D(10, 1)),
                 Line(Point2D(5, 1), Point2D(20, 1))
             )
@@ -66,11 +50,26 @@ class Day05Test {
 
         assertEquals(
             Line(Point2D(1, 5), Point2D(1, 10)),
-            lineIntersectionPoints(
-                Line(Point2D(1, 1), Point2D(1, 110)),
+            intersectLines(
+                Line(Point2D(1, 1), Point2D(1, 10)),
                 Line(Point2D(1, 5), Point2D(1, 20))
             )
         )
+
+        assertEquals(
+            Line(Point2D(7, 4), Point2D(7, 4)),
+            intersectLines(
+                Line(Point2D(7, 0), Point2D(7, 4)),
+                Line(Point2D(3, 4), Point2D(9, 4))
+            )
+        )
+
+        assertNull(
+            intersectLines(
+                Line(Point2D(2, 2), Point2D(2, 1)),
+                Line(Point2D(0, 9), Point2D(5, 9))
+            )
+        )
     }
-     */
+
 }
