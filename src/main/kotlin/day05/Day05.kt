@@ -58,7 +58,6 @@ fun taskImpl(input: String, lineFilter: (Line) -> Boolean): Int {
 }
 
 fun intersectLines(left: Line, right: Line): Set<Point2D> {
-    /*
     val isLeftHorizontal = left.begin.y == left.end.y
     val isRightHorizontal = right.begin.y == right.end.y
     val isLeftVertical = left.begin.x == left.end.x
@@ -118,62 +117,17 @@ fun intersectLines(left: Line, right: Line): Set<Point2D> {
         return setOf(Point2D(vertLine.begin.x, horiLine.begin.y))
     }
 
-    val isHorizontalAndDiagonal = (isLeftHorizontal && !isRightVertical) || (isRightHorizontal && !isLeftVertical)
-    if (isHorizontalAndDiagonal) {
-        val horiLine = if (isLeftHorizontal) left else right
-        val diagLine = if (isLeftHorizontal) right else left
-
-        val horiY = horiLine.begin.y
-        val diagMinY = min(diagLine.begin.y, diagLine.end.y)
-        val diagMaxY = max(diagLine.begin.y, diagLine.end.y)
-        if (diagMinY > horiY || diagMaxY < horiY) {
-            return emptySet()
-        }
-
-        val diagMinX = min(diagLine.begin.x, diagLine.end.x)
-        val intersectionX = diagMinX + horiY - diagMinY
-        val horiMinX = min(horiLine.begin.x, horiLine.end.x)
-        val horiMaxX = max(horiLine.begin.x, horiLine.end.x)
-        if (intersectionX in horiMinX..horiMaxX) {
-            return setOf(Point2D(intersectionX, horiY))
-        } else {
-            return emptySet()
-        }
-    }
-
-    val isVerticalAndDiagonal = (isLeftVertical && !isRightVertical) || (isRightVertical && !isRightVertical)
-    if (isVerticalAndDiagonal) {
-        val vertLine = if (isLeftVertical) left else right
-        val diagLine = if (isLeftVertical) right else left
-
-        val vertX = vertLine.begin.x
-        val diagMinX = min(diagLine.begin.x, diagLine.end.x)
-        val diagMaxX = max(diagLine.begin.x, diagLine.end.x)
-        if (diagMinX > vertX || diagMaxX < vertX) {
-            return emptySet()
-        }
-
-        val diagMinY = min(diagLine.begin.y, diagLine.end.y)
-        val intersectionY = diagMinY + vertX - diagMinX
-        val vertMinY = min(vertLine.begin.y, vertLine.end.y)
-        val vertMaxY = max(vertLine.begin.y, vertLine.end.y)
-        if (intersectionY in vertMinY..vertMaxY) {
-            return setOf(Point2D(vertX, intersectionY))
-        } else {
-            return emptySet()
-        }
-    }
-*/
-    return toPointSequence(left).toSet().intersect(toPointSequence(right).toSet())
+    return collectLinePointSet(left).intersect(collectLinePointSet(right))
 }
 
-fun toPointSequence(line: Line): Sequence<Point2D> {
+fun collectLinePointSet(line: Line): Set<Point2D> {
     if (line.begin.x == line.end.x) {
         val minY = min(line.begin.y, line.end.y)
         val maxY = max(line.begin.y, line.end.y)
         return (minY..maxY)
             .asSequence()
             .map { y -> Point2D(line.begin.x, y) }
+            .toSet()
     }
 
     if (line.begin.y == line.end.y) {
@@ -182,6 +136,7 @@ fun toPointSequence(line: Line): Sequence<Point2D> {
         return (minX..maxX)
             .asSequence()
             .map { x -> Point2D(x, line.begin.y) }
+            .toSet()
     }
 
     check(abs(line.end.x - line.begin.x) == abs(line.end.y - line.begin.y))
@@ -190,5 +145,6 @@ fun toPointSequence(line: Line): Sequence<Point2D> {
     val yStep = if (line.end.y >= line.begin.y) 1 else -1
     val stepCount = abs(line.end.x - line.begin.x) + 1
     return generateSequence(line.begin) { prev -> Point2D(prev.x + xStep, prev.y + yStep) }
-        .take(stepCount);
+        .take(stepCount)
+        .toSet()
 }
