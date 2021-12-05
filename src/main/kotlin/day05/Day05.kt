@@ -58,6 +58,8 @@ fun taskImpl(input: String, lineFilter: (Line) -> Boolean): Int {
 fun intersectLines(left: Line, right: Line): Line? {
     val isLeftHorizontal = left.begin.y == left.end.y
     val isRightHorizontal = right.begin.y == right.end.y
+    val isLeftVertical = left.begin.x == left.end.x
+    val isRightVertical = right.begin.x == right.end.x
 
     if (isLeftHorizontal && isRightHorizontal) {
         if (left.begin.y != right.begin.y) {
@@ -77,7 +79,7 @@ fun intersectLines(left: Line, right: Line): Line? {
         ) else null
     }
 
-    if (!isLeftHorizontal && !isRightHorizontal) {
+    if (isLeftVertical && isRightVertical) {
         if (left.begin.x != right.begin.x) {
             return null
         }
@@ -95,24 +97,28 @@ fun intersectLines(left: Line, right: Line): Line? {
         ) else null
     }
 
-    check(isLeftHorizontal != isRightHorizontal)
-    val horiLine = if (isLeftHorizontal) left else right
-    val vertLine = if (isRightHorizontal) left else right
+    if ((isLeftHorizontal && isRightVertical) || (isLeftVertical && isRightHorizontal)) {
+        val horiLine = if (isLeftHorizontal) left else right
+        val vertLine = if (isRightHorizontal) left else right
 
-    val horiMinX = min(horiLine.begin.x, horiLine.end.x)
-    val horiMaxX = max(horiLine.begin.x, horiLine.end.x)
-    if (vertLine.begin.x < horiMinX || vertLine.begin.x > horiMaxX) {
-        return null
+        val horiMinX = min(horiLine.begin.x, horiLine.end.x)
+        val horiMaxX = max(horiLine.begin.x, horiLine.end.x)
+        if (vertLine.begin.x < horiMinX || vertLine.begin.x > horiMaxX) {
+            return null
+        }
+
+        val vertMinY = min(vertLine.begin.y, vertLine.end.y)
+        val vertMaxY = max(vertLine.begin.y, vertLine.end.y)
+        if (horiLine.begin.y < vertMinY || horiLine.begin.y > vertMaxY) {
+            return null
+        }
+
+        val commonPoint = Point2D(vertLine.begin.x, horiLine.begin.y)
+        return Line(commonPoint, commonPoint)
     }
 
-    val vertMinY = min(vertLine.begin.y, vertLine.end.y)
-    val vertMaxY = max(vertLine.begin.y, vertLine.end.y)
-    if (horiLine.begin.y < vertMinY || horiLine.begin.y > vertMaxY) {
-        return null
-    }
-
-    val commonPoint = Point2D(vertLine.begin.x, horiLine.begin.y)
-    return Line(commonPoint, commonPoint)
+    check(false) { "diagonals are not supported" }
+    return null
 }
 
 fun toPointSequence(line: Line): Sequence<Point2D> {
