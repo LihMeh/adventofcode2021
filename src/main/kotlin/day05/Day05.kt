@@ -42,20 +42,23 @@ fun taskImpl(input: String, lineFilter: (Line) -> Boolean): Int {
         .toList()
 
     val indexPairsSequence = (0 until filteredVents.size - 1)
+        .asSequence()
         .flatMap { leftIdx -> (leftIdx + 1 until filteredVents.size).map { rightIdx -> Pair(leftIdx, rightIdx) } }
     val ventPairsSequence = indexPairsSequence
         .map { indexPair -> Pair(filteredVents[indexPair.first], filteredVents[indexPair.second]) }
 
     val intersections = ventPairsSequence
-        .mapNotNull { pair -> intersectLines(pair.first, pair.second) }
+        .map { pair -> intersectLines(pair.first, pair.second) }
+        .filter { it.isNotEmpty() }
 
-    return intersections.asSequence()
-        .flatMap { toPointSequence(it) }
+    return intersections
+        .flatten()
         .distinct()
         .count()
 }
 
-fun intersectLines(left: Line, right: Line): Line? {
+fun intersectLines(left: Line, right: Line): Set<Point2D> {
+    /*
     val isLeftHorizontal = left.begin.y == left.end.y
     val isRightHorizontal = right.begin.y == right.end.y
     val isLeftVertical = left.begin.x == left.end.x
@@ -63,7 +66,7 @@ fun intersectLines(left: Line, right: Line): Line? {
 
     if (isLeftHorizontal && isRightHorizontal) {
         if (left.begin.y != right.begin.y) {
-            return null
+            return emptySet()
         }
 
         val leftMinX = min(left.begin.x, left.end.x)
@@ -73,15 +76,14 @@ fun intersectLines(left: Line, right: Line): Line? {
 
         val targetMinX = max(leftMinX, rightMinX)
         val targetMaxX = min(leftMaxX, rightMaxX)
-        return if (targetMaxX >= targetMinX) Line(
-            Point2D(targetMinX, left.begin.y),
-            Point2D(targetMaxX, left.begin.y)
-        ) else null
+        return (targetMinX..targetMaxX)
+            .map { x -> Point2D(x, left.begin.y) }
+            .toSet()
     }
 
     if (isLeftVertical && isRightVertical) {
         if (left.begin.x != right.begin.x) {
-            return null
+            return emptySet()
         }
 
         val leftMinY = min(left.begin.y, left.end.y)
@@ -91,10 +93,9 @@ fun intersectLines(left: Line, right: Line): Line? {
 
         val targetMinY = max(leftMinY, rightMinY)
         val targetMaxY = min(leftMaxY, rightMaxY)
-        return if (targetMaxY >= targetMinY) Line(
-            Point2D(left.begin.x, targetMinY),
-            Point2D(left.begin.x, targetMaxY)
-        ) else null
+        return (targetMinY..targetMaxY)
+            .map { y -> Point2D(left.begin.x, y) }
+            .toSet()
     }
 
     val isHorizontalAndVertical = (isLeftHorizontal && isRightVertical) || (isLeftVertical && isRightHorizontal)
@@ -105,17 +106,16 @@ fun intersectLines(left: Line, right: Line): Line? {
         val horiMinX = min(horiLine.begin.x, horiLine.end.x)
         val horiMaxX = max(horiLine.begin.x, horiLine.end.x)
         if (vertLine.begin.x < horiMinX || vertLine.begin.x > horiMaxX) {
-            return null
+            return emptySet()
         }
 
         val vertMinY = min(vertLine.begin.y, vertLine.end.y)
         val vertMaxY = max(vertLine.begin.y, vertLine.end.y)
         if (horiLine.begin.y < vertMinY || horiLine.begin.y > vertMaxY) {
-            return null
+            return emptySet()
         }
 
-        val commonPoint = Point2D(vertLine.begin.x, horiLine.begin.y)
-        return Line(commonPoint, commonPoint)
+        return setOf(Point2D(vertLine.begin.x, horiLine.begin.y))
     }
 
     val isHorizontalAndDiagonal = (isLeftHorizontal && !isRightVertical) || (isRightHorizontal && !isLeftVertical)
@@ -127,7 +127,7 @@ fun intersectLines(left: Line, right: Line): Line? {
         val diagMinY = min(diagLine.begin.y, diagLine.end.y)
         val diagMaxY = max(diagLine.begin.y, diagLine.end.y)
         if (diagMinY > horiY || diagMaxY < horiY) {
-            return null
+            return emptySet()
         }
 
         val diagMinX = min(diagLine.begin.x, diagLine.end.x)
@@ -135,10 +135,9 @@ fun intersectLines(left: Line, right: Line): Line? {
         val horiMinX = min(horiLine.begin.x, horiLine.end.x)
         val horiMaxX = max(horiLine.begin.x, horiLine.end.x)
         if (intersectionX in horiMinX..horiMaxX) {
-            val commonPoint = Point2D(intersectionX, horiY)
-            return Line(commonPoint, commonPoint)
+            return setOf(Point2D(intersectionX, horiY))
         } else {
-            return null
+            return emptySet()
         }
     }
 
@@ -151,7 +150,7 @@ fun intersectLines(left: Line, right: Line): Line? {
         val diagMinX = min(diagLine.begin.x, diagLine.end.x)
         val diagMaxX = max(diagLine.begin.x, diagLine.end.x)
         if (diagMinX > vertX || diagMaxX < vertX) {
-            return null
+            return emptySet()
         }
 
         val diagMinY = min(diagLine.begin.y, diagLine.end.y)
@@ -159,36 +158,13 @@ fun intersectLines(left: Line, right: Line): Line? {
         val vertMinY = min(vertLine.begin.y, vertLine.end.y)
         val vertMaxY = max(vertLine.begin.y, vertLine.end.y)
         if (intersectionY in vertMinY..vertMaxY) {
-            val commonPoint = Point2D(vertX, intersectionY)
-            return Line(commonPoint, commonPoint)
+            return setOf(Point2D(vertX, intersectionY))
         } else {
-            return null
+            return emptySet()
         }
     }
-
-    val leftUpperPoint = if (left.begin.y < left.end.y) left.begin else left.end
-    val leftBottomPoint = if (left.begin.y > left.end.y) left.begin else left.end
-    val rightUpperPoint = if (right.begin.y < left.begin.y) left.begin else left.end
-    val rightBottomPoint = if (right.begin.y > left.end.y) left.begin else left.end
-    if (leftBottomPoint.y < rightUpperPoint.y || rightBottomPoint.y < leftUpperPoint.y) {
-        return null
-    }
-
-    val leftMinX = min(left.begin.x, left.end.x)
-    val leftMaxX = max(left.begin.x, left.end.x)
-    val rightMinX = min(right.begin.x, right.end.x)
-    val rightMaxX = max(right.begin.x, right.end.x)
-    if (leftMaxX < rightMinX || leftMinX > rightMaxX) {
-        return null
-    }
-
-    val isParallel = (leftBottomPoint.x - leftUpperPoint.x > 0) == (rightBottomPoint.x - rightUpperPoint.x > 0)
-    if (isParallel) {
-        check(false) { "parallel diagonals are not supported" }
-    }
-
-    check(false) { "non-parallel diagonals are not supported" }
-    return null
+*/
+    return toPointSequence(left).toSet().intersect(toPointSequence(right).toSet())
 }
 
 fun toPointSequence(line: Line): Sequence<Point2D> {
@@ -210,10 +186,9 @@ fun toPointSequence(line: Line): Sequence<Point2D> {
 
     check(abs(line.end.x - line.begin.x) == abs(line.end.y - line.begin.y))
 
-    val startX = min(line.begin.x, line.end.x)
-    val startY = min(line.begin.y, line.end.y)
-    val steps = abs(line.end.x - line.begin.x)
-    return (0..steps)
-        .asSequence()
-        .map { step -> Point2D(startX + step, startY + step) }
+    val xStep = if (line.end.x >= line.begin.x) 1 else -1
+    val yStep = if (line.end.y >= line.begin.y) 1 else -1
+    val stepCount = abs(line.end.x - line.begin.x) + 1
+    return generateSequence(line.begin) { prev -> Point2D(prev.x + xStep, prev.y + yStep) }
+        .take(stepCount);
 }
