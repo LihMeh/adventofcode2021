@@ -64,12 +64,45 @@ class Day05Test {
             )
         )
 
+        assertEquals(
+            Line(Point2D(1, 1), Point2D(1, 1)),
+            intersectLines(
+                Line(Point2D(0, 1), Point2D(10, 1)),
+                Line(Point2D(0, 0), Point2D(5, 5))
+            )
+        )
+
+        assertEquals(
+            Line(Point2D(1, 1), Point2D(1, 1)),
+            intersectLines(
+                Line(Point2D(1, 0), Point2D(1, 10)),
+                Line(Point2D(0, 0), Point2D(5, 5))
+            )
+        )
+
+        assertEquals(
+            Line(Point2D(1, 1), Point2D(1, 1)),
+            intersectLines(
+                Line(Point2D(0, 0), Point2D(2, 2)),
+                Line(Point2D(2, 0), Point2D(0, 2))
+            )
+        )
+
+        assertNull(
+            intersectLines(
+                Line(Point2D(0, 0), Point2D(2, 2)),
+                Line(Point2D(3, 2), Point2D(5, 0))
+            )
+        )
+
         assertNull(
             intersectLines(
                 Line(Point2D(2, 2), Point2D(2, 1)),
                 Line(Point2D(0, 9), Point2D(5, 9))
             )
         )
+
+        throw NotImplementedError("Please test parallel diagonals")
     }
 
 }

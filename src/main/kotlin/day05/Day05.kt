@@ -97,7 +97,8 @@ fun intersectLines(left: Line, right: Line): Line? {
         ) else null
     }
 
-    if ((isLeftHorizontal && isRightVertical) || (isLeftVertical && isRightHorizontal)) {
+    val isHorizontalAndVertical = (isLeftHorizontal && isRightVertical) || (isLeftVertical && isRightHorizontal)
+    if (isHorizontalAndVertical) {
         val horiLine = if (isLeftHorizontal) left else right
         val vertLine = if (isRightHorizontal) left else right
 
@@ -117,7 +118,76 @@ fun intersectLines(left: Line, right: Line): Line? {
         return Line(commonPoint, commonPoint)
     }
 
-    check(false) { "diagonals are not supported" }
+    val isHorizontalAndDiagonal = (isLeftHorizontal && !isRightVertical) || (isRightHorizontal && !isLeftVertical)
+    if (isHorizontalAndDiagonal) {
+        val horiLine = if (isLeftHorizontal) left else right
+        val diagLine = if (isLeftHorizontal) right else left
+
+        val horiY = horiLine.begin.y
+        val diagMinY = min(diagLine.begin.y, diagLine.end.y)
+        val diagMaxY = max(diagLine.begin.y, diagLine.end.y)
+        if (diagMinY > horiY || diagMaxY < horiY) {
+            return null
+        }
+
+        val diagMinX = min(diagLine.begin.x, diagLine.end.x)
+        val intersectionX = diagMinX + horiY - diagMinY
+        val horiMinX = min(horiLine.begin.x, horiLine.end.x)
+        val horiMaxX = max(horiLine.begin.x, horiLine.end.x)
+        if (intersectionX in horiMinX..horiMaxX) {
+            val commonPoint = Point2D(intersectionX, horiY)
+            return Line(commonPoint, commonPoint)
+        } else {
+            return null
+        }
+    }
+
+    val isVerticalAndDiagonal = (isLeftVertical && !isRightVertical) || (isRightVertical && !isRightVertical)
+    if (isVerticalAndDiagonal) {
+        val vertLine = if (isLeftVertical) left else right
+        val diagLine = if (isLeftVertical) right else left
+
+        val vertX = vertLine.begin.x
+        val diagMinX = min(diagLine.begin.x, diagLine.end.x)
+        val diagMaxX = max(diagLine.begin.x, diagLine.end.x)
+        if (diagMinX > vertX || diagMaxX < vertX) {
+            return null
+        }
+
+        val diagMinY = min(diagLine.begin.y, diagLine.end.y)
+        val intersectionY = diagMinY + vertX - diagMinX
+        val vertMinY = min(vertLine.begin.y, vertLine.end.y)
+        val vertMaxY = max(vertLine.begin.y, vertLine.end.y)
+        if (intersectionY in vertMinY..vertMaxY) {
+            val commonPoint = Point2D(vertX, intersectionY)
+            return Line(commonPoint, commonPoint)
+        } else {
+            return null
+        }
+    }
+
+    val leftUpperPoint = if (left.begin.y < left.end.y) left.begin else left.end
+    val leftBottomPoint = if (left.begin.y > left.end.y) left.begin else left.end
+    val rightUpperPoint = if (right.begin.y < left.begin.y) left.begin else left.end
+    val rightBottomPoint = if (right.begin.y > left.end.y) left.begin else left.end
+    if (leftBottomPoint.y < rightUpperPoint.y || rightBottomPoint.y < leftUpperPoint.y) {
+        return null
+    }
+
+    val leftMinX = min(left.begin.x, left.end.x)
+    val leftMaxX = max(left.begin.x, left.end.x)
+    val rightMinX = min(right.begin.x, right.end.x)
+    val rightMaxX = max(right.begin.x, right.end.x)
+    if (leftMaxX < rightMinX || leftMinX > rightMaxX) {
+        return null
+    }
+
+    val isParallel = (leftBottomPoint.x - leftUpperPoint.x > 0) == (rightBottomPoint.x - rightUpperPoint.x > 0)
+    if (isParallel) {
+        check(false) { "parallel diagonals are not supported" }
+    }
+
+    check(false) { "non-parallel diagonals are not supported" }
     return null
 }
 
