@@ -4,7 +4,7 @@ import common.readResource
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class Day1Test {
+class Day01Test {
 
     @Test
     fun task1_example() {
