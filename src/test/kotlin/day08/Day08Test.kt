@@ -17,13 +17,22 @@ internal class Day08Test {
     }
 
     @Test
-    fun task2_example() {
+    fun task2_example_short() {
+        assertEquals(
+            5353,
+            task2("acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf")
+        )
+    }
+
+
+    @Test
+    fun task2_example_full() {
         assertEquals(61229, task2(readResource("/day08_example.txt")))
     }
 
     @Test
     fun task2_real() {
-        assertEquals(-99999, task2(readResource("/day08_input.txt")))
+        assertEquals(1096964, task2(readResource("/day08_input.txt")))
     }
 
 }
