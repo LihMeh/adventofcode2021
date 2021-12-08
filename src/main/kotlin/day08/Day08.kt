@@ -22,3 +22,27 @@ fun task1(input: String): Int {
         .flatMap { it.outputValue }
         .count { expectedSegmentCounts.contains(it.size) }
 }
+
+fun task2(input: String): Int {
+    val entries = parseInput(input)
+    return entries
+        .map { predictOutputValue(it) }
+        .sum()
+}
+
+val digitToExpectedMapping: Map<Int, Set<Char>> = mapOf(
+    0 to setOf('a', 'b', 'c', 'e', 'f', 'g'),
+    1 to setOf('c', 'f'),
+    2 to setOf('a', 'c', 'd', 'e', 'g'),
+    3 to setOf('a', 'c', 'd', 'f', 'g'),
+    4 to setOf('b', 'c', 'd', 'f'),
+    5 to setOf('a', 'b', 'd', 'f', 'g'),
+    6 to setOf('a', 'b', 'd', 'e', 'f', 'g'),
+    7 to setOf('a', 'c', 'f'),
+    8 to setOf('a', 'b', 'c', 'd', 'e', 'f', 'g'),
+    9 to setOf('a', 'b', 'c', 'd', 'f', 'g')
+)
+
+fun predictOutputValue(entry: Entry): Int {
+    return 1
+}
