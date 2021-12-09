@@ -16,4 +16,14 @@ class Day09Test {
         assertEquals(566, task1(readResource("/day09_input.txt")))
     }
 
+    @Test
+    fun task2_example() {
+        assertEquals(1134, task2(readResource("/day09_example.txt")))
+    }
+
+    @Test
+    fun task2_real() {
+        assertEquals(891684, task2(readResource("/day09_input.txt")))
+    }
+
 }

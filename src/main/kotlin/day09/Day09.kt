@@ -34,3 +34,36 @@ fun task1(input: String): Int {
 
     return lowPoints.sumOf { 1 + heightMap[it]!! }
 }
+
+fun listBasinPoints(lowPoint: Point2D, heightMap: Map<Point2D, Int>): Set<Point2D> {
+    check(heightMap.containsKey(lowPoint))
+
+    val basinPoints = mutableSetOf<Point2D>()
+    val nextPoints = mutableSetOf(lowPoint)
+    val visitedPoints = mutableSetOf<Point2D>()
+    while (nextPoints.isNotEmpty()) {
+        val nextPoint = nextPoints.first()
+        nextPoints.remove(nextPoint)
+        visitedPoints.add(nextPoint)
+
+        val nextPointHeightOrNull = heightMap[nextPoint]
+        if (nextPointHeightOrNull != null && nextPointHeightOrNull < 9) {
+            basinPoints.add(nextPoint)
+            nextPoints.addAll(nearbyPoints(nextPoint).minus(basinPoints).minus(nextPoints).minus(visitedPoints))
+        }
+    }
+
+    return basinPoints.toSet()
+}
+
+fun task2(input: String): Int {
+    val heightMap = parseInput(input)
+    val lowPoints = heightMap.keys
+        .filter { isLowPoint(it, heightMap) }
+
+    return lowPoints
+        .map { listBasinPoints(it, heightMap).size }
+        .sortedByDescending { it }
+        .take(3)
+        .reduce { left, right -> left * right }
+}
