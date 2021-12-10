@@ -47,4 +47,32 @@ class Day10Test {
     fun task1_real() {
         assertEquals(315693, task1(readResource("/day10_input.txt")))
     }
+
+    @Test
+    fun autocomplete() {
+        assertEquals("}}]])})]".toList(), autocompleteLine("[({(<(())[]>[[{[]{<()<>>"))
+        assertEquals(")}>]})".toList(), autocompleteLine("[(()[<>])]({[<{<<[]>>("))
+        assertEquals("}}>}>))))".toList(), autocompleteLine("(((({<>}<{<{<>}{[]{[]{}"))
+        assertEquals("]]}}]}]}>".toList(), autocompleteLine("{<[[]]>}<{[{[{[]{()[[[]"))
+        assertEquals("])}>".toList(), autocompleteLine("<{([{{}}[<[[[<>{}]]]>[]]"))
+    }
+
+    @Test
+    fun autocomplete_score() {
+        assertEquals(288957, calcAutocompleteScore("}}]])})]".toList()))
+        assertEquals(5566, calcAutocompleteScore(")}>]})".toList()))
+        assertEquals(1480781, calcAutocompleteScore("}}>}>))))".toList()))
+        assertEquals(995444, calcAutocompleteScore("]]}}]}]}>".toList()))
+        assertEquals(294, calcAutocompleteScore("])}>".toList()))
+    }
+
+    @Test
+    fun task2_example() {
+        assertEquals(288957, task2(readResource("/day10_example.txt")))
+    }
+
+    @Test
+    fun task2_real() {
+        assertEquals(1870887234, task2(readResource("/day10_input.txt")))
+    }
 }
