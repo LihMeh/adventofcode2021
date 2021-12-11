@@ -3,7 +3,6 @@ package day11
 class State(proposedOctopuses: List<List<Int>>) {
     val octopuses: MutableList<MutableList<Int>>
     val rowSize: Int
-    var totalFlashesCount: Int
 
     init {
         check(proposedOctopuses.isNotEmpty())
@@ -14,16 +13,15 @@ class State(proposedOctopuses: List<List<Int>>) {
         octopuses = proposedOctopuses
             .map { it.toMutableList() }
             .toMutableList()
-
-        totalFlashesCount = 0
     }
 
-    fun getRowRange(): IntRange {
-        return 0 until octopuses.size
+
+    fun getRowCount(): Int {
+        return octopuses.size
     }
 
-    fun getColRange(): IntRange {
-        return 0 until rowSize
+    fun getColCount(): Int {
+        return octopuses.first().size
     }
 
     fun isValid(point: Point2D): Boolean {
@@ -62,7 +60,7 @@ class State(proposedOctopuses: List<List<Int>>) {
     override fun toString(): String {
         val resultBuilder = StringBuilder()
         resultBuilder.append("\n\n")
-        for (y in getRowRange()) {
+        for (y in 0 until getRowCount()) {
             val row = octopuses[y]
             for (value in row) {
                 resultBuilder.append(value)
@@ -94,14 +92,16 @@ fun pointsAround(point: Point2D): Set<Point2D> {
     return result
 }
 
-fun task1Step(before: State): State {
-    val after = State(before.octopuses)
-
+/*
+ performs a step and returns flashed octopus count.
+ Mutates state
+ */
+fun task1Step(state: State): Int {
     val octopusesToFlash = mutableSetOf<Point2D>()
-    for (y in after.getColRange()) {
-        for (x in after.getColRange()) {
-            val newValue = before.get(x, y) + 1
-            after.set(x, y, newValue)
+    for (y in 0 until state.getRowCount()) {
+        for (x in 0 until state.getColCount()) {
+            val newValue = state.get(x, y) + 1
+            state.set(x, y, newValue)
             if (newValue > 9) {
                 octopusesToFlash.add(Point2D(x, y))
             }
@@ -117,9 +117,9 @@ fun task1Step(before: State): State {
 
         val neighbours = pointsAround(nextFlash)
         for (neighbour in neighbours) {
-            if (after.isValid(neighbour)) {
-                val newValue = after.get(neighbour.x, neighbour.y) + 1
-                after.set(neighbour.x, neighbour.y, newValue)
+            if (state.isValid(neighbour)) {
+                val newValue = state.get(neighbour.x, neighbour.y) + 1
+                state.set(neighbour.x, neighbour.y, newValue)
                 if (newValue > 9 && !flashedOctopuses.contains(neighbour)) {
                     octopusesToFlash.add(neighbour)
                 }
@@ -128,19 +128,31 @@ fun task1Step(before: State): State {
     }
 
     for (flashedOne in flashedOctopuses) {
-        after.set(flashedOne.x, flashedOne.y, 0)
+        state.set(flashedOne.x, flashedOne.y, 0)
     }
 
-    after.totalFlashesCount = before.totalFlashesCount + flashedOctopuses.size
-
-    return after
+    return flashedOctopuses.size
 }
 
 fun task1(input: String): Int {
-    var state = parseState(input)
+    val state = parseState(input)
+    var totalFlashCount = 0
     for (stepNum in 0 until 100) {
-        state = task1Step(state)
+        totalFlashCount += task1Step(state)
     }
 
-    return state.totalFlashesCount
+    return totalFlashCount
+}
+
+fun task2(input: String): Int {
+    val state = parseState(input)
+    var stepNum = 0
+    while (stepNum < 10_000) {
+        stepNum++
+        val flashedOctopuses = task1Step(state)
+        if (flashedOctopuses == state.getRowCount() * state.getColCount()) {
+            return stepNum
+        }
+    }
+    throw IllegalStateException("Reached step limit")
 }

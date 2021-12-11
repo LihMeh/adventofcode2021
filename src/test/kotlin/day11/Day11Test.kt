@@ -27,15 +27,16 @@ class Day11Test {
                     "45654"
         )
         for (idx in 0 until (states.size - 1)) {
-            val stateBefore = parseState(states[idx])
+            val state = parseState(states[idx])
             val expectedStateAfter = parseState(states[idx + 1])
-            assertEquals(expectedStateAfter, task1Step(stateBefore))
+            task1Step(state)
+            assertEquals(expectedStateAfter, state)
         }
     }
 
     @Test
     fun test_task1_longer_sequences() {
-        var state = parseState(
+        val state = parseState(
             "" +
                     "5483143223\n" +
                     "2745854711\n" +
@@ -49,7 +50,7 @@ class Day11Test {
                     "5283751526"
         )
         for (stepNum in 0 until 10) {
-            state = task1Step(state)
+            task1Step(state)
         }
         assertEquals(
             parseState(
@@ -91,7 +92,12 @@ class Day11Test {
 
     @Test
     fun task1_real() {
-        assertEquals(-1, task1(readResource("/day11_input.txt")))
+        assertEquals(1773, task1(readResource("/day11_input.txt")))
+    }
+
+    @Test
+    fun task2_real() {
+        assertEquals(-1, task2(readResource("/day11_input.txt")))
     }
 
 }
