@@ -22,10 +22,7 @@ fun parseInput(input: String): Map<Point2D, Int> {
 
 fun task1(input: String): Int {
     val pointToLocalRisk = parseInput(input)
-    val maxPoint = pointToLocalRisk.keys.maxByOrNull { it.x + it.y }!!
-    return taskImpl(maxPoint) { point ->
-        pointToLocalRisk[point]
-    }
+    return taskImpl(pointToLocalRisk)
 }
 
 fun task2(input: String): Int {
@@ -62,13 +59,10 @@ fun task2(input: String): Int {
         }
     }
 
-    val findRiskFun: (Point2D) -> Int? = { point -> pointToLocalRisk[point] }
-    val maxX = pointToLocalRisk.keys.maxOf { it.x }
-    val maxY = pointToLocalRisk.keys.maxOf { it.y }
-    return taskImpl(Point2D(maxX, maxY), findRiskFun)
+    return taskImpl(pointToLocalRisk)
 }
 
-fun taskImpl(targetPoint: Point2D, findLocalRisk: (Point2D) -> Int?): Int {
+fun taskImpl(pointToLocalRisk: Map<Point2D, Int>): Int {
     val pointToTotalRisk = mutableMapOf<Point2D, Int>()
     val nextPoints = mutableSetOf(Point2D(0, 0))
 
@@ -77,7 +71,7 @@ fun taskImpl(targetPoint: Point2D, findLocalRisk: (Point2D) -> Int?): Int {
         nextPoints.remove(currentPoint)
         val currentRisk = pointToTotalRisk[currentPoint] ?: 0
         for (candidatePoint in nearbyPoints(currentPoint)) {
-            val candidateLocalRisk = findLocalRisk(candidatePoint)
+            val candidateLocalRisk = pointToLocalRisk[candidatePoint]
             if (candidateLocalRisk != null) {
                 val candidateTotalRisk = currentRisk + candidateLocalRisk
                 val knownRisk = pointToTotalRisk[candidatePoint] ?: Int.MAX_VALUE
@@ -89,5 +83,6 @@ fun taskImpl(targetPoint: Point2D, findLocalRisk: (Point2D) -> Int?): Int {
         }
     }
 
+    val targetPoint = pointToLocalRisk.keys.maxByOrNull { it.x + it.y }!!
     return pointToTotalRisk[targetPoint]!!
 }
