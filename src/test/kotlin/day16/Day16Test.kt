@@ -46,4 +46,21 @@ class Day16Test {
         assertEquals(963, task1(readResource("/day16_input.txt")))
     }
 
+    @Test
+    fun task2_example() {
+        assertEquals(3, task2("C200B40A82"))
+        assertEquals(54, task2("04005AC33890"))
+        assertEquals(7, task2("880086C3E88112"))
+        assertEquals(9, task2("CE00C43D881120"))
+        assertEquals(1, task2("D8005AC2A8F0"))
+        assertEquals(0, task2("F600BC2D8F"))
+        assertEquals(0, task2("9C005AC2F8F0"))
+        assertEquals(1, task2("9C0141080250320F1802104A08"))
+    }
+
+    @Test
+    fun task2_real() {
+        assertEquals(-1, task2(readResource("/day16_input.txt")))
+    }
+
 }

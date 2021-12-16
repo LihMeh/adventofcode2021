@@ -115,3 +115,51 @@ fun task1(inputString: String): Int {
 
     return versionSum
 }
+
+
+fun execute(packet: Packet): Int {
+    if (packet.typeId == 4) {
+        return packet.literalValue
+    }
+
+    if (packet.typeId in 0..3) {
+        check(packet.subPackets.isNotEmpty())
+    } else if (packet.typeId in 5..7) {
+        check(packet.subPackets.size == 2)
+    }
+
+    val subPacketValues = packet.subPackets
+        .map { execute(it) }
+
+    if (packet.typeId == 0) {
+        return subPacketValues.sum()
+
+    } else if (packet.typeId == 1) {
+        return subPacketValues
+            .fold(1) { product, value -> product * value }
+
+    } else if (packet.typeId == 2) {
+        return subPacketValues.minOf { it }
+
+    } else if (packet.typeId == 3) {
+        return subPacketValues.maxOf { it }
+
+    } else if (packet.typeId == 5) {
+        return if (subPacketValues[0] > subPacketValues[1]) 1 else 0
+
+    } else if (packet.typeId == 6) {
+        return if (subPacketValues[0] < subPacketValues[1]) 1 else 0
+
+    } else if (packet.typeId == 7) {
+        return if (subPacketValues[0] == subPacketValues[1]) 1 else 0
+
+    } else {
+        throw IllegalStateException()
+    }
+}
+
+fun task2(inputString: String): Int {
+    val inputBits = stringToBitList(inputString)
+    val rootPacket = parsePacket(inputBits)
+    return execute(rootPacket)
+}
