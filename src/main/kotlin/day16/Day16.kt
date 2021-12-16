@@ -17,10 +17,10 @@ fun stringToBitList(inputString: String): List<Int> {
         .toList()
 }
 
-fun bitListToInt(bits: List<Int>): Int {
+fun bitListToInt(bits: List<Int>): Long {
     check(bits.isNotEmpty())
-    var result = 0
-    var posMultiplier = 1
+    var result = 0L
+    var posMultiplier = 1L
     for (idx in bits.indices.reversed()) {
         result += posMultiplier * bits[idx]
         posMultiplier *= 2
@@ -28,17 +28,17 @@ fun bitListToInt(bits: List<Int>): Int {
     return result
 }
 
-data class Packet(val version: Int, val typeId: Int, val literalValue: Int, val subPackets: List<Packet>) {
+data class Packet(val version: Long, val typeId: Long, val literalValue: Long, val subPackets: List<Packet>) {
     init {
-        if (typeId == 4) {
+        if (typeId == 4L) {
             check(subPackets.isEmpty())
         } else {
-            check(literalValue == 0)
+            check(literalValue == 0L)
         }
     }
 
-    constructor(version: Int, literalValue: Int) : this(version, 4, literalValue, listOf())
-    constructor(version: Int, typeId: Int, subPackets: List<Packet>) : this(version, typeId, 0, subPackets)
+    constructor(version: Long, literalValue: Long) : this(version, 4, literalValue, listOf())
+    constructor(version: Long, typeId: Long, subPackets: List<Packet>) : this(version, typeId, 0L, subPackets)
 }
 
 
@@ -52,7 +52,7 @@ fun parsePacketImpl(bits: List<Int>): Pair<Packet, Int> {
     val version = bitListToInt(bits.subList(0, 3))
     val typeId = bitListToInt(bits.subList(3, 6))
 
-    if (typeId == 4) {
+    if (typeId == 4L) {
         check(bits.size >= 11)
         val literalValueBits = mutableListOf<Int>()
         var nextValueStartIdx = 6
@@ -69,7 +69,7 @@ fun parsePacketImpl(bits: List<Int>): Pair<Packet, Int> {
         val lengthTypeId = bits[6]
         if (lengthTypeId == 0) {
             val subPacketsLengthSize = 15
-            val subPacketsLength = bitListToInt(bits.subList(7, 7 + subPacketsLengthSize))
+            val subPacketsLength = bitListToInt(bits.subList(7, 7 + subPacketsLengthSize)).toInt()
             check(subPacketsLength > 0)
 
             var nextSubPacketStart = 7 + subPacketsLengthSize
@@ -100,11 +100,11 @@ fun parsePacketImpl(bits: List<Int>): Pair<Packet, Int> {
     }
 }
 
-fun task1(inputString: String): Int {
+fun task1(inputString: String): Long {
     val inputBits = stringToBitList(inputString)
     val rootPacket = parsePacket(inputBits)
 
-    var versionSum = 0
+    var versionSum = 0L
     val nextPackets = ArrayDeque<Packet>()
     nextPackets.add(rootPacket)
     while (nextPackets.isNotEmpty()) {
@@ -117,8 +117,8 @@ fun task1(inputString: String): Int {
 }
 
 
-fun execute(packet: Packet): Int {
-    if (packet.typeId == 4) {
+fun execute(packet: Packet): Long {
+    if (packet.typeId == 4L) {
         return packet.literalValue
     }
 
@@ -131,26 +131,26 @@ fun execute(packet: Packet): Int {
     val subPacketValues = packet.subPackets
         .map { execute(it) }
 
-    if (packet.typeId == 0) {
+    if (packet.typeId == 0L) {
         return subPacketValues.sum()
 
-    } else if (packet.typeId == 1) {
+    } else if (packet.typeId == 1L) {
         return subPacketValues
             .fold(1) { product, value -> product * value }
 
-    } else if (packet.typeId == 2) {
+    } else if (packet.typeId == 2L) {
         return subPacketValues.minOf { it }
 
-    } else if (packet.typeId == 3) {
+    } else if (packet.typeId == 3L) {
         return subPacketValues.maxOf { it }
 
-    } else if (packet.typeId == 5) {
+    } else if (packet.typeId == 5L) {
         return if (subPacketValues[0] > subPacketValues[1]) 1 else 0
 
-    } else if (packet.typeId == 6) {
+    } else if (packet.typeId == 6L) {
         return if (subPacketValues[0] < subPacketValues[1]) 1 else 0
 
-    } else if (packet.typeId == 7) {
+    } else if (packet.typeId == 7L) {
         return if (subPacketValues[0] == subPacketValues[1]) 1 else 0
 
     } else {
@@ -158,7 +158,7 @@ fun execute(packet: Packet): Int {
     }
 }
 
-fun task2(inputString: String): Int {
+fun task2(inputString: String): Long {
     val inputBits = stringToBitList(inputString)
     val rootPacket = parsePacket(inputBits)
     return execute(rootPacket)
