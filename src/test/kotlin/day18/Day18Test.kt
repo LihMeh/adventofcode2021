@@ -33,10 +33,6 @@ class Day18Test {
         assertEquals(parseNumber("[7,[6,[5,[7,0]]]]"), reduce(parseNumber("[7,[6,[5,[4,[3,2]]]]]")))
         assertEquals(parseNumber("[[6,[5,[7,0]]],3]"), reduce(parseNumber("[[6,[5,[4,[3,2]]]],1]")))
         assertEquals(
-            parseNumber("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]"),
-            reduce(parseNumber("[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]"))
-        )
-        assertEquals(
             parseNumber("[[3,[2,[8,0]]],[9,[5,[7,0]]]]"),
             reduce(parseNumber("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]"))
         )

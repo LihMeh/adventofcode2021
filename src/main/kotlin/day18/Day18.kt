@@ -96,19 +96,54 @@ fun explodeIfNeeded(input: Number): Number {
         return input
     }
 
-    val pathToExplode = pathToExplodeWithLeaf.subList(0, pathToExplodeWithLeaf.lastIndex)
+    val pathToExplode = pathToExplodeWithLeaf.subList(0, pathToExplodeWithLeaf.size - 1)
     val explodingPair = get(input, pathToExplode)
 
-    val exploringRightValue = explodingPair.children[1].value
-    checkNotNull(exploringRightValue)
-
     var result = replace(input, pathToExplode, Number(0))
-    // please add neighbors here
+
+    val explodingRightValue = explodingPair.children[1].value
+    if (explodingRightValue != null) {                                              // а мож стоит упасть на null?
+        result = appendTo(result, pathToExplode, explodingRightValue, 1)
+    }
+
+    val explodingLeftValue = explodingPair.children[0].value
+    if (explodingLeftValue != null) {                                               // а мож стоит упасть на null?
+        result = appendTo(result, pathToExplode, explodingLeftValue, 0)
+    }
 
     return result
 }
 
+fun appendTo(input: Number, startPath: List<Int>, valueToAdd: Long, firstStep: Int): Number {
+    check(firstStep >= 0)
+    check(firstStep <= 1)
+    check(startPath.isNotEmpty())
+
+    if (startPath.all { it == firstStep }) {
+        return input
+    }
+
+    val replacePath = startPath.toMutableList()
+    while (replacePath.last() == firstStep) {
+        replacePath.removeLast()
+    }
+    replacePath.removeLast()
+    replacePath.add(firstStep)
+
+    val mainStep = 1 - firstStep
+    while (get(input, replacePath).value == null) {
+        replacePath.add(mainStep)
+    }
+
+    val originalValue = get(input, replacePath).value!!
+    return replace(input, replacePath, Number(originalValue + valueToAdd))
+}
+
 fun get(input: Number, path: List<Int>): Number {
+    if (input.value == null && path.isEmpty()) {
+        return input
+    }
+
     check(path.isNotEmpty())
     check(input.value == null)
 
@@ -169,7 +204,12 @@ fun magnitude(input: Number): Long {
 fun task1(input: String): Long {
     val inputNumbers = input.split("\n")
         .map { parseNumber(it) }
-    val sumOfInputNumbers = inputNumbers
-        .reduceRight { left, right -> add(left, right) }
-    return magnitude(sumOfInputNumbers)
+    check(inputNumbers.size > 2)
+
+    var sum = add(inputNumbers[0], inputNumbers[1])
+    for (idx in 2..inputNumbers.lastIndex) {
+        sum = add(sum, inputNumbers[idx])
+    }
+
+    return magnitude(sum)
 }
