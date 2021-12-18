@@ -1,21 +1,21 @@
 package day18
 
-data class Number(val value: Long?, val leftChild: Number?, val rightChild: Number?) {
+data class Number(val value: Long?, val children: Pair<Number, Number>?) {
 
     init {
-        val isSimpleValue = value != null && leftChild == null && rightChild == null
-        val isPair = value == null && leftChild != null && rightChild != null
+        val isSimpleValue = value != null && children == null
+        val isPair = value == null && children != null
         check(isSimpleValue || isPair)
     }
 
-    constructor(value: Long) : this(value, null, null)
-    constructor(leftChild: Number, rightChild: Number) : this(null, leftChild, rightChild)
+    constructor(value: Long) : this(value, null)
+    constructor(leftChild: Number, rightChild: Number) : this(null, leftChild to rightChild)
 
 }
 
 fun parseNumber(input: String): Number {
     if (!input.startsWith("[")) {
-        return Number(input.toLong(), null, null)
+        return Number(input.toLong())
     }
     check(input.endsWith("]"))
 
@@ -38,18 +38,26 @@ fun parseNumber(input: String): Number {
 
     val left = parseNumber(input.substring(1, currentIdx))
     val right = parseNumber(input.substring(currentIdx + 1, input.lastIndex))
-    return Number(null, left, right)
+    return Number(left, right)
 }
 
 fun reduce(input: Number): Number {
-    val split = splitIfNeeded(input)
+    val exploded = explodeIfNeeded(input)
+    val split = splitIfNeeded(exploded)
+    return if (split == input) {
+        input
+    } else {
+        reduce(split)
+    }
+}
 
-    return split
+fun add(left: Number, right: Number): Number {
+    return reduce(Number(left, right))
 }
 
 fun splitIfNeeded(input: Number): Number {
     if (input.value == null) {
-        return Number(null, splitIfNeeded(input.leftChild!!), splitIfNeeded(input.rightChild!!))
+        return Number(splitIfNeeded(input.children!!.first), splitIfNeeded(input.children.second))
     }
 
     if (input.value < 10) {
@@ -61,18 +69,22 @@ fun splitIfNeeded(input: Number): Number {
     return Number(Number(left), Number(right))
 }
 
+fun explodeIfNeeded(input: Number): Number {
+    return input
+}
+
 fun magnitude(input: Number): Long {
     if (input.value != null) {
         return input.value
     }
 
-    return 3 * magnitude(input.leftChild!!) + 2 * magnitude(input.rightChild!!)
+    return 3 * magnitude(input.children!!.first) + 2 * magnitude(input.children.second)
 }
 
 fun task1(input: String): Long {
     val inputNumbers = input.split("\n")
         .map { parseNumber(it) }
     val sumOfInputNumbers = inputNumbers
-        .reduceRight { left, right -> reduce(Number(left, right)) }
+        .reduceRight { left, right -> add(left, right) }
     return magnitude(sumOfInputNumbers)
 }
