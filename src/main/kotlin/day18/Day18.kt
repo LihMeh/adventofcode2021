@@ -1,24 +1,25 @@
 package day18
 
-data class Number(val value: Long?, val children: Pair<Number, Number>?) {
+data class Number(val value: Long?, val children: List<Number>) {
 
     init {
-        val isSimpleValue = value != null && children == null
-        val isPair = value == null && children != null
+        val isSimpleValue = value != null && children.isEmpty()
+        val isPair = value == null && children.size == 2
         check(isSimpleValue || isPair)
     }
 
-    constructor(value: Long) : this(value, null)
-    constructor(leftChild: Number, rightChild: Number) : this(null, leftChild to rightChild)
+    constructor(value: Long) : this(value, listOf())
+    constructor(leftChild: Number, rightChild: Number) : this(null, listOf(leftChild, rightChild))
+    constructor(children: List<Number>) : this(null, children)
 
     private fun render(target: Appendable) {
         if (value != null) {
             target.append(value.toString())
         } else {
             target.append("[")
-            children!!.first.render(target)
+            children[0].render(target)
             target.append(",")
-            children.second.render(target)
+            children[1].render(target)
             target.append("]")
         }
     }
@@ -74,7 +75,7 @@ fun add(left: Number, right: Number): Number {
 
 fun splitIfNeeded(input: Number): Number {
     if (input.value == null) {
-        return Number(splitIfNeeded(input.children!!.first), splitIfNeeded(input.children.second))
+        return Number(input.children.map { splitIfNeeded(it) })
     }
 
     if (input.value < 10) {
@@ -98,11 +99,10 @@ fun explodeIfNeeded(input: Number): Number {
     val pathToExplode = pathToExplodeWithLeaf.subList(0, pathToExplodeWithLeaf.lastIndex)
     val explodingPair = get(input, pathToExplode)
 
-    val exploringRightValue = explodingPair.children!!.second.value
+    val exploringRightValue = explodingPair.children[1].value
     checkNotNull(exploringRightValue)
 
     var result = replace(input, pathToExplode, Number(0))
-    
     // please add neighbors here
 
     return result
@@ -112,7 +112,7 @@ fun get(input: Number, path: List<Int>): Number {
     check(path.isNotEmpty())
     check(input.value == null)
 
-    val nextChild = input.children!!.toList()[path.first()]
+    val nextChild = input.children[path.first()]
     if (path.size == 1) {
         return nextChild
     } else {
@@ -128,7 +128,7 @@ fun replace(input: Number, path: List<Int>, newItem: Number): Number {
     val pathHead = path.first()
     val pathTail = path.subList(1, path.size)
 
-    val newChildren = mutableListOf(input.children!!.first, input.children.second)
+    val newChildren = mutableListOf(input.children[0], input.children[1])
     newChildren[pathHead] = replace(newChildren[pathHead], pathTail, newItem)
 
     return Number(newChildren.first(), newChildren.last())
@@ -140,9 +140,8 @@ fun knownPaths(input: Number): List<List<Int>> {
     }
 
     val result = mutableListOf<List<Int>>()
-    val childrenList = input.children!!.toList()
-    for (childIdx in childrenList.indices) {
-        val childPaths = knownPaths(childrenList[childIdx])
+    for (childIdx in input.children.indices) {
+        val childPaths = knownPaths(input.children[childIdx])
         if (childPaths.isEmpty()) { // leaf
             result.add(listOf(childIdx))
         } else { // branch
@@ -164,7 +163,7 @@ fun magnitude(input: Number): Long {
         return input.value
     }
 
-    return 3 * magnitude(input.children!!.first) + 2 * magnitude(input.children.second)
+    return 3 * magnitude(input.children[0]) + 2 * magnitude(input.children[1])
 }
 
 fun task1(input: String): Long {
