@@ -11,6 +11,25 @@ data class Number(val value: Long?, val children: Pair<Number, Number>?) {
     constructor(value: Long) : this(value, null)
     constructor(leftChild: Number, rightChild: Number) : this(null, leftChild to rightChild)
 
+    private fun render(target: Appendable) {
+        if (value != null) {
+            target.append(value.toString())
+        } else {
+            target.append("[")
+            children!!.first.render(target)
+            target.append(",")
+            children.second.render(target)
+            target.append("]")
+        }
+    }
+
+    override fun toString(): String {
+        val result = StringBuilder()
+        render(result)
+        return result.toString()
+    }
+
+
 }
 
 fun parseNumber(input: String): Number {
