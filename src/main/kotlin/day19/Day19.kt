@@ -28,15 +28,17 @@ fun pointPlus(left: Point, right: Point): Point {
         .map { idx -> left[idx] + right[idx] }
 }
 
-fun allPossibleDirections(input: ScanResult): List<ScanResult> {
+fun allPossibleDirections(input: ScanResult): Set<ScanResult> {
     val scannedRotations = mutableListOf(
         input,
         input.map { point -> listOf(point[0], point[2], point[1]) }.toSet(),
         input.map { point -> listOf(point[2], point[1], point[0]) }.toSet(),
-        input.map { point -> listOf(point[1], point[0], point[2]) }.toSet()
+        input.map { point -> listOf(point[1], point[0], point[2]) }.toSet(),
+        input.map { point -> listOf(point[1], point[2], point[0]) }.toSet(),
+        input.map { point -> listOf(point[2], point[0], point[1]) }.toSet()
     )
 
-    val result = mutableListOf<ScanResult>()
+    val result = mutableSetOf<ScanResult>()
     for (rotation in scannedRotations) {
         for (xMultiplier in listOf(-1, 1)) {
             for (yMultiplier in listOf(-1, 1)) {
@@ -87,7 +89,7 @@ fun task1(input: String): Int {
         } else {
             scannersQueue.addLast(nextScanner)
         }
-        println(scannersQueue.size)
+        println("scanners left to match: ${scannersQueue.size}")
     }
 
     return knownBeacons.size
@@ -95,12 +97,12 @@ fun task1(input: String): Int {
 
 fun findIntersectionShift(left: ScanResult, right: ScanResult, enoughPoints: Int): Point? {
     for (leftStartingPoint in left) {
-        val normalizedLeftPoints = left.map { pointMinus(it, leftStartingPoint) }.toSet()
         for (rightStartingPoint in right) {
-            val normalizedRightPoints = right.map { pointMinus(it, rightStartingPoint) }.toSet()
-            val commonPoints = normalizedLeftPoints.intersect(normalizedRightPoints)
+            val targetDiff = pointMinus(leftStartingPoint, rightStartingPoint)
+            val normalizedRightPoints = right.map { pointPlus(it, targetDiff) }.toSet()
+            val commonPoints = left.intersect(normalizedRightPoints)
             if (commonPoints.size >= enoughPoints) {
-                return pointMinus(leftStartingPoint, rightStartingPoint)
+                return targetDiff
             }
         }
     }

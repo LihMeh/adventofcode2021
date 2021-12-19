@@ -26,9 +26,7 @@ class Day19Test {
 сканер 1: -4 -1  2
 
 leftStartingPoint: -1
-normalizedLeft: 0 3 6
 rightStartingPoint: -4
-normalizedRight: 0 3 6
 
 targetDiff (result): leftStartingPoint - rightStartingPoint
 targetDiff: 3
@@ -120,13 +118,13 @@ targetDiff: 3
         )
         for (scannerToRotate in scanners) {
             val allDirections = allPossibleDirections(scannerToRotate)
-            val expetedButNotFoundDirections = scanners
+            val expectedButNotFoundDirections = scanners
                 .filter { !allDirections.contains(it) }
                 .toList()
-            assert(expetedButNotFoundDirections.isEmpty()) {
+            assert(expectedButNotFoundDirections.isEmpty()) {
                 "" +
                         "scanner to rotate:\n" + scannerToRotate + "\n" +
-                        "not found directions: \n" + expetedButNotFoundDirections + "\n"
+                        "not found directions: \n" + expectedButNotFoundDirections + "\n"
             }
         }
     }
