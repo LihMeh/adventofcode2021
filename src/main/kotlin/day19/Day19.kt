@@ -89,7 +89,7 @@ fun task1(input: String): Int {
         } else {
             scannersQueue.addLast(nextScanner)
         }
-        println("scanners left to match: ${scannersQueue.size}")
+        println("Beacons found: ${knownBeacons.size} ; scanners left to match: ${scannersQueue.size}")
     }
 
     return knownBeacons.size
