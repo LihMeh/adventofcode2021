@@ -7,13 +7,17 @@ import kotlin.test.assertEquals
 class Day19Test {
 
     @Test
-    fun task1_example() {
-        assertEquals(79, task1(readResource("/day19_example.txt")))
+    fun task_example() {
+        val (beaconCount, maxScannerDist) = task(readResource("/day19_example.txt"))
+        assertEquals(79, beaconCount)
+        assertEquals(3621, maxScannerDist)
     }
 
     @Test
-    fun task1_real() {
-        assertEquals(465, task1(readResource("/day19_input.txt")))
+    fun task_real() {
+        val (beaconCount, maxScannerDist) = task(readResource("/day19_input.txt"))
+        assertEquals(465, beaconCount)
+        assertEquals(12149, maxScannerDist)
     }
 
     /*

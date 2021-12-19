@@ -1,5 +1,7 @@
 package day19
 
+import kotlin.math.abs
+
 typealias Point = List<Int>
 typealias ScanResult = Set<Point>
 
@@ -63,7 +65,7 @@ fun allPossibleDirections(input: ScanResult): Set<ScanResult> {
     return result
 }
 
-fun task1(input: String): Int {
+fun task(input: String): Pair<Int, Int> {
     val scanners = parseInput(input)
     check(scanners.isNotEmpty())
 
@@ -72,6 +74,8 @@ fun task1(input: String): Int {
 
     val knownBeacons = mutableSetOf<Point>()
     knownBeacons.addAll(scannersQueue.removeFirst())
+
+    val knownIntersectionShifts = mutableListOf<Point>()
 
     while (scannersQueue.isNotEmpty()) {
         val nextScanner = scannersQueue.removeFirst()
@@ -86,13 +90,26 @@ fun task1(input: String): Int {
             match
                 .map { pointPlus(it, intersectionShift) }
                 .forEach { knownBeacons.add(it) }
+            knownIntersectionShifts.add(intersectionShift)
         } else {
             scannersQueue.addLast(nextScanner)
         }
         println("Beacons found: ${knownBeacons.size} ; scanners left to match: ${scannersQueue.size}")
     }
 
-    return knownBeacons.size
+    var maxShiftDistance = 0
+    for (left in knownIntersectionShifts) {
+        for (right in knownIntersectionShifts) {
+            val distance = left.indices
+                .map { abs(right[it] - left[it]) }
+                .sum()
+            if (distance > maxShiftDistance) {
+                maxShiftDistance = distance
+            }
+        }
+    }
+
+    return knownBeacons.size to maxShiftDistance
 }
 
 fun findIntersectionShift(left: ScanResult, right: ScanResult, enoughPoints: Int): Point? {
