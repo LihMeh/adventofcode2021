@@ -14,7 +14,7 @@ class Day20Test {
 
     @Test
     fun task1_real() {
-        assertEquals(-1, task1(readResource("/day20_input.txt")))
+        assertEquals(5349, task1(readResource("/day20_input.txt")))
     }
 
 }
