@@ -99,8 +99,9 @@ fun enchanceImage(image: Image, enhancementAlgorithm: List<Boolean>): Image {
     return Image(newImagePoints, image.valueOutside.xor(enhancementAlgorithm[0]))
 }
 
-fun task1(inputString: String): Int {
+fun taskImpl(inputString: String, steps: Int): Int {
     val (enhancementAlgorithm, imagePoints) = parseInput(inputString)
+    check((!enhancementAlgorithm[0]) || (steps % 2 == 0))
 
     var currentImage = Image(imagePoints, false)
     println()
@@ -108,7 +109,7 @@ fun task1(inputString: String): Int {
     drawImage(currentImage)
     println()
 
-    for (step in 0 until 2) {
+    for (step in 0 until steps) {
         println("after step $step")
         currentImage = enchanceImage(currentImage, enhancementAlgorithm)
         drawImage(currentImage)
@@ -117,4 +118,12 @@ fun task1(inputString: String): Int {
 
     check(!currentImage.valueOutside)
     return currentImage.points.count()
+}
+
+fun task1(inputString: String): Int {
+    return taskImpl(inputString, 2)
+}
+
+fun task2(inputString: String): Int {
+    return taskImpl(inputString, 50)
 }
