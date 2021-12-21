@@ -22,7 +22,7 @@ class Day21Test {
 
     @Test
     fun task2_real() {
-        assertEquals(-1, task2(listOf(0, 1)))
+        assertEquals(27674034218179, task2(listOf(0, 1)))
     }
 
 }
