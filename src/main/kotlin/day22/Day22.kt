@@ -45,19 +45,19 @@ fun isRegionContains(region: Region, xRange: IntRange, yRange: IntRange, zRange:
             && zRange.first >= region.z.first && zRange.last <= region.z.last
 }
 
-fun task1(input: String): Long {
-    val limit = 50
+fun taskImpl(input: String, predicate: (CommandRow) -> (Boolean)): Long {
     val commands = parseInput(input)
     val filteredCommands = commands
-        .filter {
-            it.region.x.first >= -limit && it.region.x.last <= limit
-                    && it.region.y.first >= -limit && it.region.y.last <= limit
-                    && it.region.z.first >= -limit && it.region.z.last <= limit
-        }
+        .filter(predicate)
 
     val xRanges = splitByPanes(filteredCommands) { it.x }
     val yRanges = splitByPanes(filteredCommands) { it.y }
     val zRanges = splitByPanes(filteredCommands) { it.z }
+
+    val totalRegions = xRanges.size * yRanges.size * zRanges.size
+    var processedRegions = 0L
+    val speakupInterval = 100_000L
+    var speakupRegions = 0L
 
     var totalLitCount = 0L
     for (xRange in xRanges) {
@@ -71,9 +71,31 @@ fun task1(input: String): Long {
                     val zRangeSize = 1L + zRange.last - zRange.first
                     totalLitCount += xRangeSize * yRangeSize * zRangeSize
                 }
+
+
+                processedRegions++
+                speakupRegions++
+                if (speakupRegions >= speakupInterval) {
+                    speakupRegions -= speakupInterval
+                    val percents = 100L * processedRegions / totalRegions
+                    println("Processed $processedRegions / $totalRegions ($percents%)")
+                }
             }
         }
     }
 
     return totalLitCount
+}
+
+fun task1(input: String): Long {
+    val limit = 50
+    return taskImpl(input) {
+        it.region.x.first >= -limit && it.region.x.last <= limit
+                && it.region.y.first >= -limit && it.region.y.last <= limit
+                && it.region.z.first >= -limit && it.region.z.last <= limit
+    }
+}
+
+fun task2(input: String): Long {
+    return taskImpl(input) { true }
 }
