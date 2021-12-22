@@ -18,7 +18,7 @@ class Day22Test {
 
     @Test
     fun expandCuboid() {
-        assertEquals(27, day22.expandCuboid(Region(Point3D(10, 10, 10), Point3D(12, 12, 12))).size)
+        assertEquals(27, expandCuboid(Region(10..12, 10..12, 10..12)).size)
     }
 
 }
