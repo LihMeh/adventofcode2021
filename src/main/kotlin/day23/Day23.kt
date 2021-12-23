@@ -23,20 +23,23 @@ fun stackIdxToX(stackIdx: Int): Int {
 data class State(
     val insideStacks: List<List<Char>>,
     val outsizeXToChar: Map<Int, Char>,
+    val targetStackSize: Int,
     val score: Int
 )
 
 fun buildStartingState(pointToChar: Map<Point2D, Char>): State {
     val insideStacks = mutableListOf<List<Char>>()
+    val targetStackSize = pointToChar
+        .maxOf { it.key.y } - 2
     for (stackIdx in 0..3) {
         val stackX = stackIdxToX(stackIdx)
         val currentStack = mutableListOf<Char>()
-        for (y in 3 downTo 2) {
+        for (y in (targetStackSize + 1) downTo 2) {
             currentStack.add(pointToChar[Point2D(stackX, y)]!!)
         }
         insideStacks.add(currentStack)
     }
-    return State(insideStacks, mapOf(), 0)
+    return State(insideStacks, mapOf(), targetStackSize, 0)
 }
 
 val stackIdsToTargetChar = listOf('A', 'B', 'C', 'D')
@@ -66,7 +69,7 @@ fun possibleMovesOutside(state: State): List<State> {
 
         val charToMove = stack.last()
         val stepCost = charToMoveCost[charToMove]!!
-        val distanceToOutside = 3 - stack.size
+        val distanceToOutside = 1 + state.targetStackSize - stack.size
 
         val targetPossibleXs = mutableSetOf<Int>()
         val currentX = stackIdxToX(stackIdx)
@@ -97,12 +100,13 @@ fun possibleMovesOutside(state: State): List<State> {
 
             val updatedOutsideXToChar = mutableMapOf<Int, Char>()
             updatedOutsideXToChar.putAll(state.outsizeXToChar)
-            updatedOutsideXToChar.put(targetX, charToMove)
+            updatedOutsideXToChar[targetX] = charToMove
 
             result.add(
                 State(
                     updatedInsideStacks,
                     updatedOutsideXToChar,
+                    state.targetStackSize,
                     state.score + currentMoveCost
                 )
             )
@@ -140,7 +144,7 @@ fun possibleMovesInside(state: State): List<State> {
         if (!isPathFree) continue
 
         val distanceToX = abs(targetX - currentX)
-        val distanceInside = 2 - targetStack.size
+        val distanceInside = state.targetStackSize - targetStack.size
         val distance = distanceToX + distanceInside
         val cost = distance * charToMoveCost[currentChar]!!
 
@@ -164,6 +168,7 @@ fun possibleMovesInside(state: State): List<State> {
             State(
                 updatedStacks,
                 updatedOutside,
+                state.targetStackSize,
                 state.score + cost
             )
         )
@@ -184,12 +189,13 @@ fun isFinalState(state: State): Boolean {
         if (stack.any { it != targetChar }) {
             return false
         }
+        check(stack.size == state.targetStackSize)
     }
 
     return true
 }
 
-fun task1(input: String): Int {
+fun task(input: String): Int {
     val pointToChar = parseInput(input)
 
     val statesToCheck = ArrayDeque<State>()

@@ -9,7 +9,7 @@ class Day23Test {
     fun task1_example() {
         assertEquals(
             12521,
-            task1(
+            task(
                 "" +
                         "#############\n" +
                         "#...........#\n" +
@@ -24,12 +24,48 @@ class Day23Test {
     fun task1_real() {
         assertEquals(
             14460,
-            task1("" +
-                    "#############\n" +
-                    "#...........#\n" +
-                    "###D#B#D#A###\n" +
-                    "  #C#C#A#B#\n" +
-                    "  #########\n")
+            task(
+                "" +
+                        "#############\n" +
+                        "#...........#\n" +
+                        "###D#B#D#A###\n" +
+                        "  #C#C#A#B#\n" +
+                        "  #########\n"
+            )
+        )
+    }
+
+    @Test
+    fun task2_example() {
+        assertEquals(
+            44169,
+            task(
+                "" +
+                        "#############\n" +
+                        "#...........#\n" +
+                        "###B#C#B#D###\n" +
+                        "  #D#C#B#A#\n" +
+                        "  #D#B#A#C#\n" +
+                        "  #A#D#C#A#\n" +
+                        "  #########"
+            )
+        )
+    }
+
+    @Test
+    fun task2_real() {
+        assertEquals(
+            41366,
+            task(
+                "" +
+                        "#############\n" +
+                        "#...........#\n" +
+                        "###D#B#D#A###\n" +
+                        "  #D#C#B#A#\n" +
+                        "  #D#B#A#C#\n" +
+                        "  #C#C#A#B#\n" +
+                        "  #########\n"
+            )
         )
     }
 
